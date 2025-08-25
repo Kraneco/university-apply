@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
+import { Layout } from '@/components/layout/layout';
+import { PublicRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,124 +18,128 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loading } from '@/components/ui/loading';
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  GraduationCap,
-  ArrowLeft,
-} from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { LanguageToggle } from '@/components/ui/language-toggle';
 
-export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
+const loginSchema = z.object({
+  email: z.string().email('请输入有效的邮箱地址'),
+  password: z.string().min(1, '请输入密码'),
+  rememberMe: z.boolean().optional(),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+function LoginContent() {
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const { login, isLoading, isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
   const { t } = useTranslation();
-
-  const loginSchema = z.object({
-    email: z.string().email(t('login.emailPlaceholder')),
-    password: z.string().min(1, t('login.passwordPlaceholder')),
-  });
-
-  type LoginFormData = z.infer<typeof loginSchema>;
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
+  useEffect(() => {
+    // 加载保存的邮箱和记住我状态
+    const savedEmail = localStorage.getItem('userEmail');
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+
+    if (savedEmail) {
+      setValue('email', savedEmail);
+    }
+    if (savedRememberMe) {
+      setRememberMe(true);
+      setValue('rememberMe', true);
+    }
+  }, [setValue]);
+
+  // 如果用户已登录，重定向到dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [isAuthenticated, router]);
+
+  // 如果用户已登录，显示加载状态
+  if (isAuthenticated) {
+    return (
+      <Layout>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="text-muted-foreground">正在跳转...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   const onSubmit = async (data: LoginFormData) => {
     setError('');
-    const result = await login(data);
-
-    if (result.success) {
-      router.push(ROUTES.DASHBOARD);
-    } else {
-      setError(result.message);
+    try {
+      const result = await login({ ...data, rememberMe });
+      if (result.success) {
+        // 如果选择了记住我，保存到localStorage
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+          localStorage.setItem('userEmail', data.email);
+        } else {
+          localStorage.removeItem('rememberMe');
+          localStorage.removeItem('userEmail');
+        }
+        router.push(ROUTES.DASHBOARD);
+      } else {
+        let errorMessage = result.message || '登录失败，请稍后重试';
+        if (errorMessage && errorMessage.startsWith('api.')) {
+          errorMessage = t(errorMessage);
+        }
+        setError(errorMessage);
+      }
+    } catch (error) {
+      console.log(error);
+      setError('登录过程中发生错误，请稍后重试');
     }
   };
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* 顶部导航栏 */}
-      <div className="bg-background border-b px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <Link
-            href={ROUTES.HOME}
-            className="text-muted-foreground hover:text-foreground flex items-center space-x-2 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>{t('common.backToHome')}</span>
-          </Link>
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </div>
-      </div>
-
-      {/* 主要内容 */}
-      <div className="flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <Layout>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <GraduationCap className="h-12 w-12 text-blue-600" />
-            </div>
-            <h2 className="text-foreground mt-6 text-3xl font-extrabold">
-              {t('login.title')}
-            </h2>
-            <p className="text-muted-foreground mt-2 text-sm">
-              {t('login.noAccount')}{' '}
-              <Link
-                href={ROUTES.REGISTER}
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                {t('login.register')}
-              </Link>
-            </p>
-          </div>
-
           <Card>
             <CardHeader>
-              <CardTitle>{t('login.subtitle')}</CardTitle>
-              <CardDescription>{t('login.subtitle')}</CardDescription>
+              <CardTitle className="text-center">{t('login.title')}</CardTitle>
+              <CardDescription className="text-center">
+                {t('login.subtitle')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {error && (
-                  <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-600">
-                    {error}
-                  </div>
-                )}
-
                 <div>
                   <label
                     htmlFor="email"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('login.email')}
                   </label>
-                  <div className="relative">
-                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="email"
                       type="email"
+                      placeholder={t('login.emailPlaceholder')}
                       {...register('email')}
                       className="pl-10"
-                      placeholder={t('login.emailPlaceholder')}
                     />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   </div>
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.email.message}
                     </p>
                   )}
@@ -143,23 +148,23 @@ export default function LoginPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('login.password')}
                   </label>
-                  <div className="relative">
-                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
+                      placeholder={t('login.passwordPlaceholder')}
                       {...register('password')}
                       className="pr-10 pl-10"
-                      placeholder={t('login.passwordPlaceholder')}
                     />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer"
+                      className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -169,7 +174,7 @@ export default function LoginPage() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.password.message}
                     </p>
                   )}
@@ -181,7 +186,12 @@ export default function LoginPage() {
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
-                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      checked={rememberMe}
+                      onChange={(e) => {
+                        setRememberMe(e.target.checked);
+                        setValue('rememberMe', e.target.checked);
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <label
                       htmlFor="remember-me"
@@ -191,25 +201,21 @@ export default function LoginPage() {
                     </label>
                   </div>
 
-                  <div className="text-sm">
-                    <a
-                      href="#"
-                      className="font-medium text-blue-600 hover:text-blue-500"
-                    >
+                  {/* <div className="text-sm">
+                    <a href="#" className="text-blue-600 hover:text-blue-500">
                       {t('login.forgotPassword')}
                     </a>
-                  </div>
+                  </div> */}
                 </div>
 
+                {error && (
+                  <div className="rounded-md bg-red-50 p-4">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                )}
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <Loading size="sm" />
-                      <span>{t('login.loggingIn')}</span>
-                    </div>
-                  ) : (
-                    t('login.login')
-                  )}
+                  {isLoading ? t('login.loggingIn') : t('login.login')}
                 </Button>
               </form>
 
@@ -220,28 +226,33 @@ export default function LoginPage() {
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="bg-background text-muted-foreground px-2">
-                      {t('login.testAccounts')}
+                      {t('login.noAccount')}
                     </span>
                   </div>
                 </div>
 
-                <div className="text-muted-foreground mt-4 space-y-2 text-sm">
-                  <p>
-                    <strong>{t('login.adminAccount')}：</strong>
-                  </p>
-                  <p>{t('login.email')}：admin@example.com</p>
-                  <p>{t('login.password')}：password123</p>
-                  <p className="mt-2">
-                    <strong>{t('login.studentAccount')}：</strong>
-                  </p>
-                  <p>{t('login.email')}：student@example.com</p>
-                  <p>{t('login.password')}：password123</p>
+                <div className="mt-6">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push(ROUTES.REGISTER)}
+                  >
+                    {t('login.register')}
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+    </Layout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <PublicRoute>
+      <LoginContent />
+    </PublicRoute>
   );
 }

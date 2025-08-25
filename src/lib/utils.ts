@@ -88,26 +88,45 @@ export function validateEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export function validatePassword(password: string): {
+export function validatePassword(
+  password: string,
+  language: 'zh' | 'en' = 'zh'
+): {
   isValid: boolean;
   errors: string[];
 } {
   const errors: string[] = [];
 
   if (password.length < 8) {
-    errors.push('密码至少需要8个字符');
+    errors.push(
+      language === 'zh'
+        ? '密码至少需要8个字符'
+        : 'Password must be at least 8 characters'
+    );
   }
 
   if (!/[A-Z]/.test(password)) {
-    errors.push('密码需要包含至少一个大写字母');
+    errors.push(
+      language === 'zh'
+        ? '密码需要包含至少一个大写字母'
+        : 'Password must contain at least one uppercase letter'
+    );
   }
 
   if (!/[a-z]/.test(password)) {
-    errors.push('密码需要包含至少一个小写字母');
+    errors.push(
+      language === 'zh'
+        ? '密码需要包含至少一个小写字母'
+        : 'Password must contain at least one lowercase letter'
+    );
   }
 
   if (!/\d/.test(password)) {
-    errors.push('密码需要包含至少一个数字');
+    errors.push(
+      language === 'zh'
+        ? '密码需要包含至少一个数字'
+        : 'Password must contain at least one number'
+    );
   }
 
   return {

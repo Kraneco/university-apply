@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
+import { Layout } from '@/components/layout/layout';
+import { PublicRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,157 +18,153 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loading } from '@/components/ui/loading';
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  Phone,
-  GraduationCap,
-  ArrowLeft,
-} from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
-import { validatePassword } from '@/lib/utils';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { LanguageToggle } from '@/components/ui/language-toggle';
+import { RegisterData } from '@/types';
 
-export default function RegisterPage() {
+const registerSchema = z
+  .object({
+    name: z.string().min(2, '姓名至少需要2个字符'),
+    email: z.string().email('请输入有效的邮箱地址'),
+    phone: z.string().optional(),
+    password: z.string().min(8, '密码至少需要8个字符'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: '密码不匹配',
+    path: ['confirmPassword'],
+  });
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
+function RegisterContent() {
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const { register: registerUser, isLoading, isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const { register: registerUser, isLoading } = useAuthStore();
   const { t } = useTranslation();
-
-  const registerSchema = z
-    .object({
-      name: z.string().min(2, t('register.namePlaceholder')),
-      email: z.string().email(t('register.emailPlaceholder')),
-      phone: z.string().optional(),
-      password: z.string().min(8, t('register.passwordPlaceholder')),
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t('register.passwordMismatch'),
-      path: ['confirmPassword'],
-    });
-
-  type RegisterFormData = z.infer<typeof registerSchema>;
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const validation = validatePassword(value);
-    setPasswordErrors(validation.errors);
+  const password = watch('password');
+
+  // 如果用户已登录，重定向到dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push(ROUTES.DASHBOARD);
+    }
+  }, [isAuthenticated, router]);
+
+  // 如果用户已登录，显示加载状态
+  if (isAuthenticated) {
+    return (
+      <Layout>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <p className="text-muted-foreground">正在跳转...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const validatePassword = (password: string) => {
+    const errors: string[] = [];
+    if (password.length < 8) {
+      errors.push('密码至少需要8个字符');
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('密码需要包含至少一个大写字母');
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('密码需要包含至少一个小写字母');
+    }
+    if (!/\d/.test(password)) {
+      errors.push('密码需要包含至少一个数字');
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.push('密码需要包含至少一个特殊字符');
+    }
+    return errors;
   };
 
   const onSubmit = async (data: RegisterFormData) => {
     setError('');
+    setPasswordErrors([]);
 
-    // 验证密码强度
-    const validation = validatePassword(data.password);
-    if (!validation.isValid) {
-      setPasswordErrors(validation.errors);
+    const passwordValidationErrors = validatePassword(data.password);
+    if (passwordValidationErrors.length > 0) {
+      setPasswordErrors(passwordValidationErrors);
       return;
     }
 
-    const result = await registerUser({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      role: 'student',
-      phone: data.phone,
-    });
-
-    if (result.success) {
-      router.push(ROUTES.DASHBOARD);
-    } else {
-      setError(result.message);
+    try {
+      const result = await registerUser({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        role: 'student', // 固定为student角色
+        phone: data.phone,
+      });
+      if (result.success) {
+        router.push(ROUTES.DASHBOARD);
+      } else {
+        let errorMessage = result.message || '注册失败，请稍后重试';
+        if (errorMessage && errorMessage.startsWith('api.')) {
+          errorMessage = t(errorMessage);
+        }
+        setError(errorMessage);
+      }
+    } catch (error) {
+      console.log(error);
+      setError('注册过程中发生错误，请稍后重试');
     }
   };
 
   return (
-    <div className="bg-background min-h-screen">
-      {/* 顶部导航栏 */}
-      <div className="bg-background border-b px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <Link
-            href={ROUTES.HOME}
-            className="text-muted-foreground hover:text-foreground flex items-center space-x-2 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>{t('common.backToHome')}</span>
-          </Link>
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-            <LanguageToggle />
-          </div>
-        </div>
-      </div>
-
-      {/* 主要内容 */}
-      <div className="flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <Layout>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <div className="flex justify-center">
-              <GraduationCap className="h-12 w-12 text-blue-600" />
-            </div>
-            <h2 className="text-foreground mt-6 text-3xl font-extrabold">
-              {t('register.title')}
-            </h2>
-            <p className="text-muted-foreground mt-2 text-sm">
-              {t('register.hasAccount')}{' '}
-              <Link
-                href={ROUTES.LOGIN}
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                {t('register.login')}
-              </Link>
-            </p>
-          </div>
-
           <Card>
             <CardHeader>
-              <CardTitle>{t('register.subtitle')}</CardTitle>
-              <CardDescription>{t('register.description')}</CardDescription>
+              <CardTitle className="text-center">
+                {t('register.title')}
+              </CardTitle>
+              <CardDescription className="text-center">
+                {t('register.description')}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {error && (
-                  <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-600">
-                    {error}
-                  </div>
-                )}
-
                 <div>
                   <label
                     htmlFor="name"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('register.name')}
                   </label>
-                  <div className="relative">
-                    <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  <div className="relative mt-1">
                     <Input
                       id="name"
                       type="text"
+                      placeholder={t('register.namePlaceholder')}
                       {...register('name')}
                       className="pl-10"
-                      placeholder={t('register.namePlaceholder')}
                     />
+                    <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   </div>
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.name.message}
                     </p>
                   )}
@@ -176,22 +173,22 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('register.email')}
                   </label>
-                  <div className="relative">
-                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="email"
                       type="email"
+                      placeholder={t('register.emailPlaceholder')}
                       {...register('email')}
                       className="pl-10"
-                      placeholder={t('register.emailPlaceholder')}
                     />
+                    <Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   </div>
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.email.message}
                     </p>
                   )}
@@ -200,22 +197,22 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="phone"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('register.phone')}
                   </label>
-                  <div className="relative">
-                    <Phone className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="phone"
                       type="tel"
+                      placeholder={t('register.phonePlaceholder')}
                       {...register('phone')}
                       className="pl-10"
-                      placeholder={t('register.phonePlaceholder')}
                     />
+                    <Phone className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   </div>
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.phone.message}
                     </p>
                   )}
@@ -224,24 +221,23 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('register.password')}
                   </label>
-                  <div className="relative">
-                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      {...register('password')}
-                      onChange={handlePasswordChange}
-                      className="pr-10 pl-10"
                       placeholder={t('register.passwordPlaceholder')}
+                      {...register('password')}
+                      className="pr-10 pl-10"
                     />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer"
+                      className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2"
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -250,17 +246,8 @@ export default function RegisterPage() {
                       )}
                     </button>
                   </div>
-                  {passwordErrors.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {passwordErrors.map((error, index) => (
-                        <p key={index} className="text-sm text-red-600">
-                          • {error}
-                        </p>
-                      ))}
-                    </div>
-                  )}
                   {errors.password && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.password.message}
                     </p>
                   )}
@@ -269,25 +256,25 @@ export default function RegisterPage() {
                 <div>
                   <label
                     htmlFor="confirmPassword"
-                    className="text-foreground mb-2 block text-sm font-medium"
+                    className="text-foreground block text-sm font-medium"
                   >
                     {t('register.confirmPassword')}
                   </label>
-                  <div className="relative">
-                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+                  <div className="relative mt-1">
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder={t('register.confirmPasswordPlaceholder')}
                       {...register('confirmPassword')}
                       className="pr-10 pl-10"
-                      placeholder={t('register.confirmPasswordPlaceholder')}
                     />
+                    <Lock className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <button
                       type="button"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
                       }
-                      className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transform cursor-pointer"
+                      className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -297,50 +284,72 @@ export default function RegisterPage() {
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="mt-1 text-sm text-red-600">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.confirmPassword.message}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center">
-                  <input
-                    id="agree-terms"
-                    name="agree-terms"
-                    type="checkbox"
-                    required
-                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label
-                    htmlFor="agree-terms"
-                    className="text-foreground ml-2 block text-sm"
-                  >
-                    {t('register.agreeTerms')}{' '}
-                    <a href="#" className="text-primary hover:text-primary/80">
-                      {t('register.termsOfService')}
-                    </a>{' '}
-                    {t('register.and')}{' '}
-                    <a href="#" className="text-primary hover:text-primary/80">
-                      {t('register.privacyPolicy')}
-                    </a>
-                  </label>
-                </div>
+                {passwordErrors.length > 0 && (
+                  <div className="rounded-md bg-red-50 p-4">
+                    <h4 className="text-sm font-medium text-red-800">
+                      {t('register.passwordRequirements')}
+                    </h4>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                      {passwordErrors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="rounded-md bg-red-50 p-4">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                )}
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <Loading size="sm" />
-                      <span>{t('register.creatingAccount')}</span>
-                    </div>
-                  ) : (
-                    t('register.createAccount')
-                  )}
+                  {isLoading
+                    ? t('register.creatingAccount')
+                    : t('register.createAccount')}
                 </Button>
               </form>
+
+              <div className="mt-6">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="bg-background text-muted-foreground px-2">
+                      {t('register.hasAccount')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => router.push(ROUTES.LOGIN)}
+                  >
+                    {t('register.login')}
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
+    </Layout>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <PublicRoute>
+      <RegisterContent />
+    </PublicRoute>
   );
 }

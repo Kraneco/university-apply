@@ -4,12 +4,16 @@ export interface User {
   email: string;
   name: string;
   role: 'student' | 'admin';
-  avatar?: string;
   phone?: string;
   address?: string;
-  education?: EducationBackground;
+  avatarUrl?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// 包含密码hash的用户类型（仅内部使用）
+export interface UserWithPassword extends User {
+  passwordHash?: string;
 }
 
 export interface EducationBackground {
@@ -29,32 +33,34 @@ export interface University {
   name: string;
   country: string;
   state?: string;
-  city: string;
+  city?: string;
   ranking?: number;
   acceptanceRate?: number;
-  tuition: {
-    domestic: number;
-    international: number;
-    currency: string;
-  };
-  programs: Program[];
-  applicationDeadlines: ApplicationDeadline[];
-  requirements: AdmissionRequirements;
-  description: string;
-  website: string;
-  logo?: string;
-  images?: string[];
+  tuitionFee?: number;
+  websiteUrl?: string;
+  description?: string;
+  logoUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Program {
   id: string;
+  universityId: string;
   name: string;
-  degree: 'bachelor' | 'master' | 'phd';
-  duration: number; // 年数
-  tuition: number;
-  requirements: ProgramRequirements;
+  degreeType: string;
+  duration: number;
+  tuitionFee?: number;
+  minGpa?: number;
+  minSat?: number;
+  minAct?: number;
+  minToefl?: number;
+  minIelts?: number;
+  requiredDocuments?: string[];
+  optionalDocuments?: string[];
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProgramRequirements {
@@ -90,7 +96,14 @@ export interface Application {
   userId: string;
   universityId: string;
   programId: string;
-  status: ApplicationStatus;
+  status:
+    | 'not_started'
+    | 'in_progress'
+    | 'submitted'
+    | 'under_review'
+    | 'interview_scheduled'
+    | 'decision_made'
+    | 'completed';
   submissionDate?: string;
   decisionDate?: string;
   decision?: 'accepted' | 'rejected' | 'waitlisted' | 'deferred';
@@ -99,6 +112,10 @@ export interface Application {
   priority: 'high' | 'medium' | 'low';
   createdAt: string;
   updatedAt: string;
+  // 关联数据
+  universityName?: string;
+  programName?: string;
+  degreeType?: string;
 }
 
 export type ApplicationStatus =
@@ -113,7 +130,8 @@ export type ApplicationStatus =
 
 export interface ApplicationMaterial {
   id: string;
-  type:
+  applicationId: string;
+  materialType:
     | 'transcript'
     | 'recommendation_letter'
     | 'personal_statement'
@@ -142,8 +160,8 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
-  createdAt: string;
   actionUrl?: string;
+  createdAt: string;
 }
 
 // 提醒相关类型
@@ -151,7 +169,7 @@ export interface Reminder {
   id: string;
   userId: string;
   title: string;
-  description: string;
+  description?: string;
   dueDate: string;
   isCompleted: boolean;
   priority: 'high' | 'medium' | 'low';
@@ -161,15 +179,14 @@ export interface Reminder {
 }
 
 // API响应类型
-export interface ApiResponse<T> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   message?: string;
-  error?: string;
+  status?: number;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
+export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   pagination: {
     page: number;
     limit: number;
@@ -194,14 +211,15 @@ export interface SearchFilters {
 export interface LoginCredentials {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export interface RegisterData {
+  name: string;
   email: string;
   password: string;
-  name: string;
-  role: 'student';
   phone?: string;
+  role?: 'student' | 'admin';
 }
 
 export interface AuthState {
@@ -228,3 +246,91 @@ export interface FileUpload {
   status: 'uploading' | 'success' | 'error';
   error?: string;
 }
+
+// Mock data for demonstration
+export const mockApplications: Application[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    universityId: 'uni1',
+    programId: 'prog1',
+    status: 'submitted',
+    submissionDate: '2025-01-15T00:00:00Z',
+    decisionDate: undefined,
+    decision: undefined,
+    materials: [],
+    notes: '申请材料已提交，等待审核',
+    priority: 'high',
+    createdAt: '2025-01-10T00:00:00Z',
+    updatedAt: '2025-01-15T00:00:00Z',
+    universityName: '哈佛大学',
+    programName: '计算机科学',
+    degreeType: 'bachelor',
+  },
+  {
+    id: '2',
+    userId: 'user1',
+    universityId: 'uni2',
+    programId: 'prog2',
+    status: 'in_progress',
+    submissionDate: undefined,
+    decisionDate: undefined,
+    decision: undefined,
+    materials: [],
+    notes: '正在准备申请材料',
+    priority: 'medium',
+    createdAt: '2025-01-12T00:00:00Z',
+    updatedAt: '2025-01-12T00:00:00Z',
+    universityName: '斯坦福大学',
+    programName: '工程学',
+    degreeType: 'bachelor',
+  },
+];
+
+export const mockNotifications: Notification[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    type: 'status_update',
+    title: '申请状态更新',
+    message: '您的哈佛大学申请已进入审核阶段',
+    isRead: false,
+    createdAt: '2025-01-20T10:30:00Z',
+  },
+  {
+    id: '2',
+    userId: 'user1',
+    type: 'deadline_reminder',
+    title: '截止日期提醒',
+    message: '斯坦福大学申请截止日期还有3天',
+    isRead: true,
+    createdAt: '2025-01-19T15:45:00Z',
+  },
+];
+
+export const mockReminders: Reminder[] = [
+  {
+    id: '1',
+    userId: 'user1',
+    title: '准备推荐信',
+    description: '联系教授获取推荐信',
+    dueDate: '2025-01-25T00:00:00Z',
+    isCompleted: false,
+    priority: 'high',
+    category: 'document',
+    createdAt: '2025-01-15T00:00:00Z',
+    updatedAt: '2025-01-15T00:00:00Z',
+  },
+  {
+    id: '2',
+    userId: 'user1',
+    title: '托福考试',
+    description: '参加托福考试',
+    dueDate: '2025-02-01T00:00:00Z',
+    isCompleted: false,
+    priority: 'medium',
+    category: 'test',
+    createdAt: '2025-01-10T00:00:00Z',
+    updatedAt: '2025-01-10T00:00:00Z',
+  },
+];

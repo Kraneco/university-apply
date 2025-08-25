@@ -11,22 +11,34 @@ interface ProtectedRouteProps {
   children: ReactNode;
   requiredRole?: 'student' | 'admin';
   fallback?: ReactNode;
+  public?: boolean; // 新增：是否为公开页面
 }
 
 export function ProtectedRoute({
   children,
   requiredRole,
   fallback,
+  public: isPublic = false,
 }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
   const { t } = useTranslation();
 
   useEffect(() => {
+    // 如果是公开页面，不需要重定向
+    if (isPublic) {
+      return;
+    }
+
     if (!isLoading && !isAuthenticated) {
       router.push(ROUTES.LOGIN);
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, router, isPublic]);
+
+  // 如果是公开页面，直接渲染内容
+  if (isPublic) {
+    return <>{children}</>;
+  }
 
   // 检查角色权限
   const hasRequiredRole = !requiredRole || user?.role === requiredRole;
@@ -61,6 +73,21 @@ export function ProtectedRoute({
   }
 
   return <>{children}</>;
+}
+
+// 公开路由 - 不需要登录
+export function PublicRoute({
+  children,
+  fallback,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
+  return (
+    <ProtectedRoute public={true} fallback={fallback}>
+      {children}
+    </ProtectedRoute>
+  );
 }
 
 // 学生专用路由

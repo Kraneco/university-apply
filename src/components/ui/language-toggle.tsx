@@ -1,7 +1,7 @@
 'use client';
 
 import { Languages } from 'lucide-react';
-import { useLanguageStore, type Language } from '@/store/language-store';
+import { useLanguageStore } from '@/store/language-store';
 import { useTranslation } from '@/lib/i18n';
 import {
   DropdownMenu,
@@ -12,10 +12,10 @@ import {
 import { Button } from '@/components/ui/button';
 
 export function LanguageToggle() {
-  const { setLanguage } = useLanguageStore();
+  const { language, setLanguage, toggleLanguage } = useLanguageStore();
   const { t } = useTranslation();
 
-  const languages: { value: Language; label: string; flag: string }[] = [
+  const languages: { value: 'zh' | 'en'; label: string; flag: string }[] = [
     {
       value: 'zh',
       label: t('settings.chinese'),
@@ -28,11 +28,23 @@ export function LanguageToggle() {
     },
   ];
 
+  const currentLanguage = languages.find((lang) => lang.value === language);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-9 w-9"
+          title={t('settings.language')}
+        >
           <Languages className="h-4 w-4" />
+          {currentLanguage && (
+            <span className="absolute -top-1 -right-1 text-xs">
+              {currentLanguage.flag}
+            </span>
+          )}
           <span className="sr-only">Toggle language</span>
         </Button>
       </DropdownMenuTrigger>
@@ -41,10 +53,15 @@ export function LanguageToggle() {
           <DropdownMenuItem
             key={lang.value}
             onClick={() => setLanguage(lang.value)}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${
+              language === lang.value ? 'bg-accent' : ''
+            }`}
           >
             <span className="text-lg">{lang.flag}</span>
-            {lang.label}
+            <span>{lang.label}</span>
+            {language === lang.value && (
+              <span className="text-muted-foreground ml-auto text-xs">✓</span>
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

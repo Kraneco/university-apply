@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
 import { Layout } from '@/components/layout/layout';
+import { PublicRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,16 +26,10 @@ import {
 } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 
-export default function HomePage() {
+function HomeContent() {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
   const { t } = useTranslation();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push(ROUTES.DASHBOARD);
-    }
-  }, [isAuthenticated, router]);
 
   const features = [
     {
@@ -68,7 +62,7 @@ export default function HomePage() {
   ];
 
   return (
-    <Layout>
+    <Layout showFooter={true}>
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
@@ -83,22 +77,35 @@ export default function HomePage() {
               {t('home.subtitle')}
             </p>
             <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button
-                size="lg"
-                variant="secondary"
-                onClick={() => router.push(ROUTES.REGISTER)}
-                className="px-8 py-3 text-lg"
-              >
-                {t('home.getStarted')}
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => router.push(ROUTES.LOGIN)}
-                className="border-white bg-transparent px-8 py-3 text-lg text-white hover:bg-white hover:text-blue-600"
-              >
-                {t('home.loginAccount')}
-              </Button>
+              {!isAuthenticated ? (
+                <>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={() => router.push(ROUTES.REGISTER)}
+                    className="px-8 py-3 text-lg"
+                  >
+                    {t('home.getStarted')}
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => router.push(ROUTES.LOGIN)}
+                    className="border-white bg-transparent px-8 py-3 text-lg text-white hover:bg-white hover:text-blue-600"
+                  >
+                    {t('home.loginAccount')}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  onClick={() => router.push(ROUTES.DASHBOARD)}
+                  className="px-8 py-3 text-lg"
+                >
+                  {t('dashboard.title')}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -120,7 +127,7 @@ export default function HomePage() {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="text-center transition-shadow hover:shadow-lg"
+                className="cursor text-center transition-shadow hover:shadow-lg"
               >
                 <CardHeader>
                   <div className="mb-4 flex justify-center">
@@ -185,5 +192,13 @@ export default function HomePage() {
         </div>
       </section>
     </Layout>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <PublicRoute>
+      <HomeContent />
+    </PublicRoute>
   );
 }

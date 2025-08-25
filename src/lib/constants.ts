@@ -1,6 +1,8 @@
+import { getTranslation } from './i18n';
+
 // 应用常量
-export const APP_NAME = '大学申请跟踪系统';
-export const APP_DESCRIPTION = '一站式大学申请管理平台';
+export const APP_NAME = getTranslation('zh', 'home.title');
+export const APP_DESCRIPTION = getTranslation('zh', 'home.subtitle');
 
 // 路由常量
 export const ROUTES = {
@@ -10,6 +12,8 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   UNIVERSITIES: '/universities',
   APPLICATIONS: '/applications',
+  REMINDERS: '/reminders',
+  NOTIFICATIONS: '/notifications',
   PROFILE: '/profile',
   SETTINGS: '/settings',
   ADMIN: '/admin',
@@ -223,6 +227,32 @@ export const API_ENDPOINTS = {
     CREATE: '/api/reminders',
     UPDATE: '/api/reminders/[id]',
     DELETE: '/api/reminders/[id]',
+  },
+} as const;
+
+export const API_ROUTES = {
+  AUTH: {
+    LOGIN: '/api/auth/login',
+    REGISTER: '/api/auth/register',
+    LOGOUT: '/api/auth/logout',
+    ME: '/api/auth/me',
+  },
+  APPLICATIONS: {
+    LIST: '/api/applications',
+    DETAIL: (id: string) => `/api/applications/${id}`,
+  },
+  UNIVERSITIES: {
+    LIST: '/api/universities',
+    DETAIL: (id: string) => `/api/universities/${id}`,
+  },
+  REMINDERS: {
+    LIST: '/api/reminders',
+    DETAIL: (id: string) => `/api/reminders/${id}`,
+    COMPLETE: (id: string) => `/api/reminders/${id}/complete`,
+  },
+  NOTIFICATIONS: {
+    LIST: '/api/notifications',
+    DETAIL: (id: string) => `/api/notifications/${id}`,
   },
 } as const;
 

@@ -45,36 +45,6 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 94.1%;
   }
-
-  /* 确保所有可点击元素都有正确的 cursor */
-  button,
-  [role='button'],
-  a,
-  input[type='submit'],
-  input[type='button'],
-  input[type='reset'],
-  input[type='checkbox'],
-  input[type='radio'],
-  input[type='file'],
-  input[type='range'],
-  select,
-  option {
-    cursor: pointer;
-  }
-
-  /* 禁用状态的 cursor */
-  button:disabled,
-  [role='button']:disabled,
-  input[type='submit']:disabled,
-  input[type='button']:disabled,
-  input[type='reset']:disabled,
-  input[type='checkbox']:disabled,
-  input[type='radio']:disabled,
-  input[type='file']:disabled,
-  input[type='range']:disabled,
-  select:disabled {
-    cursor: not-allowed;
-  }
 }
 
 @layer base {
@@ -98,7 +68,66 @@
   input[type='file'],
   input[type='range'],
   select,
-  option {
+  option,
+  .cursor-pointer,
+  [data-radix-select-item],
+  [data-radix-select-trigger],
+  [data-radix-dropdown-menu-item],
+  [data-radix-popover-trigger],
+  [data-radix-dialog-trigger],
+  [data-radix-accordion-trigger],
+  [data-radix-tabs-trigger],
+  [data-radix-navigation-menu-trigger],
+  [data-radix-collapsible-trigger],
+  [data-radix-toggle-group-item],
+  [data-radix-switch],
+  [data-radix-checkbox],
+  [data-radix-radio-group-item],
+  [data-radix-slider-thumb],
+  [data-radix-progress-indicator],
+  [data-radix-scroll-area-thumb],
+  [data-radix-separator],
+  [data-radix-aspect-ratio],
+  [data-radix-avatar],
+  [data-radix-avatar-image],
+  [data-radix-avatar-fallback],
+  [data-radix-label],
+  [data-radix-slot],
+  [data-radix-primitive],
+  [data-radix-portal],
+  [data-radix-root],
+  [data-radix-provider],
+  [data-radix-collection],
+  [data-radix-select-trigger],
+  [data-radix-select-item],
+  [data-radix-select-content],
+  [data-radix-collection-item],
+  [data-radix-focus-guard],
+  [data-radix-focus-scope],
+  [data-radix-focus-trap],
+  [data-radix-dismissable-layer],
+  [data-radix-alert-dialog-trigger],
+  [data-radix-context-menu-trigger],
+  [data-radix-hover-card-trigger],
+  [data-radix-menubar-trigger],
+  [data-radix-tooltip-trigger],
+  [data-radix-toast-viewport],
+  [data-radix-toast-root],
+  [data-radix-toast-action],
+  [data-radix-toast-close],
+  [data-radix-toast-title],
+  [data-radix-toast-description],
+  [data-radix-toast-provider] {
+    cursor: pointer;
+  }
+
+  /* 为可点击的卡片和其他元素添加 cursor */
+  .card-clickable,
+  .clickable,
+  [onclick],
+  [onClick],
+  [data-clickable='true'],
+  [data-interactive='true'] {
     cursor: pointer;
   }
 
