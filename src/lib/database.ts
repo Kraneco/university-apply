@@ -22,7 +22,7 @@ export const mockData = {
       email: 'student@example.com',
       name: '张三',
       role: 'student' as const,
-      avatar: '/avatars/student.jpg',
+      avatarUrl: '/avatars/student.jpg',
       phone: '+86 139 0000 0000',
       address: '上海市浦东新区',
       education: {
@@ -47,53 +47,11 @@ export const mockData = {
       city: 'Cambridge',
       ranking: 1,
       acceptanceRate: 4.6,
-      tuition: {
-        domestic: 54768,
-        international: 54768,
-        currency: 'USD',
-      },
-      programs: [
-        {
-          id: '1',
-          name: '计算机科学',
-          degree: 'bachelor' as const,
-          duration: 4,
-          tuition: 54768,
-          requirements: {
-            minGPA: 3.8,
-            minSAT: 1500,
-            minTOEFL: 100,
-            requiredDocuments: ['成绩单', '推荐信', '个人陈述', 'SAT成绩'],
-            optionalDocuments: ['AP成绩', '作品集'],
-          },
-        },
-      ],
-      applicationDeadlines: [
-        {
-          id: '1',
-          type: 'early_decision' as const,
-          deadline: '2024-11-01',
-          description: '早申请截止日期',
-        },
-        {
-          id: '2',
-          type: 'regular_decision' as const,
-          deadline: '2025-01-01',
-          description: '常规申请截止日期',
-        },
-      ],
-      requirements: {
-        minGPA: 3.8,
-        minSAT: 1500,
-        minTOEFL: 100,
-        requiredDocuments: ['成绩单', '推荐信', '个人陈述', 'SAT成绩'],
-        optionalDocuments: ['AP成绩', '作品集'],
-      },
+      tuitionFee: 54768,
       description:
         '哈佛大学是一所位于美国马萨诸塞州剑桥市的私立研究型大学，为著名的常春藤盟校成员。',
-      website: 'https://www.harvard.edu',
-      logo: '/universities/harvard.png',
-      images: ['/universities/harvard1.jpg', '/universities/harvard2.jpg'],
+      websiteUrl: 'https://www.harvard.edu',
+      logoUrl: '/universities/harvard.png',
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
     },
@@ -105,53 +63,11 @@ export const mockData = {
       city: 'Stanford',
       ranking: 2,
       acceptanceRate: 4.3,
-      tuition: {
-        domestic: 56169,
-        international: 56169,
-        currency: 'USD',
-      },
-      programs: [
-        {
-          id: '2',
-          name: '工程学',
-          degree: 'bachelor' as const,
-          duration: 4,
-          tuition: 56169,
-          requirements: {
-            minGPA: 3.9,
-            minSAT: 1480,
-            minTOEFL: 100,
-            requiredDocuments: ['成绩单', '推荐信', '个人陈述', 'SAT成绩'],
-            optionalDocuments: ['AP成绩', '作品集'],
-          },
-        },
-      ],
-      applicationDeadlines: [
-        {
-          id: '3',
-          type: 'early_action' as const,
-          deadline: '2024-11-01',
-          description: '早行动申请截止日期',
-        },
-        {
-          id: '4',
-          type: 'regular_decision' as const,
-          deadline: '2025-01-02',
-          description: '常规申请截止日期',
-        },
-      ],
-      requirements: {
-        minGPA: 3.9,
-        minSAT: 1480,
-        minTOEFL: 100,
-        requiredDocuments: ['成绩单', '推荐信', '个人陈述', 'SAT成绩'],
-        optionalDocuments: ['AP成绩', '作品集'],
-      },
+      tuitionFee: 56169,
       description:
         '斯坦福大学是一所位于美国加利福尼亚州斯坦福的私立研究型大学，以其在科技和创新方面的卓越表现而闻名。',
-      website: 'https://www.stanford.edu',
-      logo: '/universities/stanford.png',
-      images: ['/universities/stanford1.jpg', '/universities/stanford2.jpg'],
+      websiteUrl: 'https://www.stanford.edu',
+      logoUrl: '/universities/stanford.png',
       createdAt: '2024-01-01T00:00:00Z',
       updatedAt: '2024-01-01T00:00:00Z',
     },
@@ -167,7 +83,8 @@ export const mockData = {
       materials: [
         {
           id: '1',
-          type: 'transcript' as const,
+          applicationId: '1',
+          materialType: 'transcript' as const,
           name: '高中成绩单',
           fileName: 'transcript.pdf',
           fileUrl: '/materials/transcript.pdf',
@@ -178,7 +95,8 @@ export const mockData = {
         },
         {
           id: '2',
-          type: 'personal_statement' as const,
+          applicationId: '1',
+          materialType: 'personal_statement' as const,
           name: '个人陈述',
           fileName: 'personal_statement.pdf',
           fileUrl: '/materials/personal_statement.pdf',
@@ -310,12 +228,12 @@ export class Database {
       }
       if (filters.minTuition !== undefined) {
         universities = universities.filter(
-          (u) => u.tuition.international >= filters.minTuition!
+          (u) => (u.tuitionFee || 0) >= filters.minTuition!
         );
       }
       if (filters.maxTuition !== undefined) {
         universities = universities.filter(
-          (u) => u.tuition.international <= filters.maxTuition!
+          (u) => (u.tuitionFee || 0) <= filters.maxTuition!
         );
       }
     }

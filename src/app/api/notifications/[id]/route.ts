@@ -1,11 +1,7 @@
 import { NextRequest } from 'next/server';
 import { NotificationService } from '@/lib/services/notification-service';
-import {
-  createApiResponse,
-  createErrorResponse,
-  createNotFoundResponse,
-} from '@/lib/api-response';
-import { getTranslation, type Language } from '@/lib/i18n';
+import { createApiResponse, createErrorResponse } from '@/lib/api-response';
+import { type Language } from '@/lib/i18n';
 
 // 获取请求的语言
 function getRequestLanguage(request: NextRequest): Language {
@@ -17,10 +13,11 @@ function getRequestLanguage(request: NextRequest): Language {
 // PUT /api/notifications/[id] - 标记通知为已读
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await NotificationService.markAsRead(params.id);
+    const { id } = await params;
+    await NotificationService.markAsRead(id);
 
     const language = getRequestLanguage(request);
     return createApiResponse(
@@ -44,10 +41,11 @@ export async function PUT(
 // DELETE /api/notifications/[id] - 删除通知
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await NotificationService.delete(params.id);
+    const { id } = await params;
+    await NotificationService.delete(id);
 
     const language = getRequestLanguage(request);
     return createApiResponse(

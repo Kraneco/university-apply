@@ -7,6 +7,11 @@ export interface User {
   phone?: string;
   address?: string;
   avatarUrl?: string;
+  bio?: string;
+  backupEmail?: string;
+  emergencyContact?: string;
+  website?: string;
+  education?: EducationBackground;
   createdAt: string;
   updatedAt: string;
 }

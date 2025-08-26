@@ -5,23 +5,19 @@ import { useTranslation } from '@/lib/i18n';
 import { useAuthStore } from '@/store/auth-store';
 import { Layout } from '@/components/layout/layout';
 import { ProtectedRoute } from '@/components/auth/protected-route';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading';
 import {
   User,
-  Edit,
   GraduationCap,
   FileText,
   Settings,
   Calendar,
   Mail,
   Phone,
-  MapPin,
-  Globe,
 } from 'lucide-react';
 import { BasicInfoTab } from './components/basic-info-tab';
 import { EducationTab } from './components/education-tab';

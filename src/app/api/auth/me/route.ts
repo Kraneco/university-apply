@@ -6,7 +6,7 @@ import {
   createErrorResponse,
   createUnauthorizedResponse,
 } from '@/lib/api-response';
-import { getTranslation, type Language } from '@/lib/i18n';
+import { type Language } from '@/lib/i18n';
 
 // 获取请求的语言
 function getRequestLanguage(request: NextRequest): Language {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || 'your-secret-key'
-    ) as any;
+    ) as { userId: string; email: string; role: string };
 
     // 获取用户信息
     const user = await UserService.findById(decoded.userId);

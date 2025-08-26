@@ -37,10 +37,10 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
     name: user.name || '',
     phone: user.phone || '',
     address: user.address || '',
-    bio: (user as any).bio || '',
-    backupEmail: (user as any).backupEmail || '',
-    emergencyContact: (user as any).emergencyContact || '',
-    website: (user as any).website || '',
+    bio: user.bio || '',
+    backupEmail: user.backupEmail || '',
+    emergencyContact: user.emergencyContact || '',
+    website: user.website || '',
   });
 
   // 获取用户头像的初始字母
@@ -96,10 +96,10 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
       name: user.name || '',
       phone: user.phone || '',
       address: user.address || '',
-      bio: (user as any).bio || '',
-      backupEmail: (user as any).backupEmail || '',
-      emergencyContact: (user as any).emergencyContact || '',
-      website: (user as any).website || '',
+      bio: user.bio || '',
+      backupEmail: user.backupEmail || '',
+      emergencyContact: user.emergencyContact || '',
+      website: user.website || '',
     });
     setIsEditing(false);
   };
@@ -214,7 +214,7 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
               ) : (
                 <div className="bg-muted flex items-center space-x-2 rounded p-2">
                   <Mail className="text-muted-foreground h-4 w-4" />
-                  <span>{(user as any).backupEmail || '未设置'}</span>
+                  <span>{user.backupEmail || '未设置'}</span>
                 </div>
               )}
             </div>
@@ -252,7 +252,7 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
                 />
               ) : (
                 <div className="bg-muted rounded p-2">
-                  <span>{(user as any).bio || '未设置个人简介'}</span>
+                  <span>{user.bio || '未设置个人简介'}</span>
                 </div>
               )}
             </div>
@@ -271,7 +271,7 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
               ) : (
                 <div className="bg-muted flex items-center space-x-2 rounded p-2">
                   <Globe className="text-muted-foreground h-4 w-4" />
-                  <span>{(user as any).website || '未设置'}</span>
+                  <span>{user.website || '未设置'}</span>
                 </div>
               )}
             </div>
@@ -295,7 +295,7 @@ export function BasicInfoTab({ user }: BasicInfoTabProps) {
               ) : (
                 <div className="bg-muted flex items-center space-x-2 rounded p-2">
                   <Phone className="text-muted-foreground h-4 w-4" />
-                  <span>{(user as any).emergencyContact || '未设置'}</span>
+                  <span>{user.emergencyContact || '未设置'}</span>
                 </div>
               )}
             </div>

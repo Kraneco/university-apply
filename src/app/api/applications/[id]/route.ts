@@ -13,7 +13,7 @@ import {
 // GET /api/applications/[id] - 获取单个申请详情
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const language = getRequestLanguage(request);
@@ -22,7 +22,8 @@ export async function GET(
       return createUnauthorizedResponse('api.auth.unauthorized', language);
     }
 
-    const application = await ApplicationService.findById(params.id);
+    const { id } = await params;
+    const application = await ApplicationService.findById(id);
 
     if (!application) {
       return createNotFoundResponse('api.applications.notFound', language);
@@ -41,6 +42,7 @@ export async function GET(
     );
   } catch (error) {
     console.error('Error fetching application:', error);
+    const language = getRequestLanguage(request);
     return createErrorResponse(
       'api.applications.fetchError',
       undefined,
@@ -53,7 +55,7 @@ export async function GET(
 // PUT /api/applications/[id] - 更新申请
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const language = getRequestLanguage(request);
@@ -62,12 +64,13 @@ export async function PUT(
       return createUnauthorizedResponse('api.auth.unauthorized', language);
     }
 
+    const { id } = await params;
     const body = await request.json();
     const { status, decision, notes, priority, submissionDate, decisionDate } =
       body;
 
     // 检查申请是否存在
-    const existingApplication = await ApplicationService.findById(params.id);
+    const existingApplication = await ApplicationService.findById(id);
     if (!existingApplication) {
       return createNotFoundResponse('api.applications.notFound', language);
     }
@@ -78,7 +81,7 @@ export async function PUT(
     }
 
     // 使用新的update方法
-    const updatedApplication = await ApplicationService.update(params.id, {
+    const updatedApplication = await ApplicationService.update(id, {
       status,
       decision,
       notes,
@@ -104,6 +107,7 @@ export async function PUT(
     );
   } catch (error) {
     console.error('Error updating application:', error);
+    const language = getRequestLanguage(request);
     return createErrorResponse(
       'api.applications.updateError',
       undefined,
@@ -116,7 +120,7 @@ export async function PUT(
 // DELETE /api/applications/[id] - 删除申请
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const language = getRequestLanguage(request);
@@ -125,8 +129,9 @@ export async function DELETE(
       return createUnauthorizedResponse('api.auth.unauthorized', language);
     }
 
+    const { id } = await params;
     // 检查申请是否存在
-    const existingApplication = await ApplicationService.findById(params.id);
+    const existingApplication = await ApplicationService.findById(id);
     if (!existingApplication) {
       return createNotFoundResponse('api.applications.notFound', language);
     }
@@ -136,7 +141,7 @@ export async function DELETE(
       return createForbiddenResponse('api.auth.forbidden', language);
     }
 
-    await ApplicationService.delete(params.id);
+    await ApplicationService.delete(id);
 
     return createApiResponse(
       null,
@@ -146,6 +151,7 @@ export async function DELETE(
     );
   } catch (error) {
     console.error('Error deleting application:', error);
+    const language = getRequestLanguage(request);
     return createErrorResponse(
       'api.applications.deleteError',
       undefined,

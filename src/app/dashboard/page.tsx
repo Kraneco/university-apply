@@ -14,15 +14,11 @@ import { LoadingSpinner } from '@/components/ui/loading';
 import {
   GraduationCap,
   Plus,
-  Search,
-  User,
   Calendar,
   Bell,
   TrendingUp,
   Clock,
-  CheckCircle,
   FileText,
-  Target,
 } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 import { Application, Notification, Reminder } from '@/types';

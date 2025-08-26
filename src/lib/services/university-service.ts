@@ -21,7 +21,7 @@ export class UniversityService {
         tuitionFee: row.tuition_domestic,
         websiteUrl: row.website,
         description: row.description,
-        logoUrl: null,
+        logoUrl: undefined,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }));
@@ -51,7 +51,7 @@ export class UniversityService {
         tuitionFee: row.tuition_domestic,
         websiteUrl: row.website,
         description: row.description,
-        logoUrl: null,
+        logoUrl: undefined,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }));
@@ -85,7 +85,7 @@ export class UniversityService {
         tuitionFee: row.tuition_domestic,
         websiteUrl: row.website,
         description: row.description,
-        logoUrl: null,
+        logoUrl: undefined,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       };
@@ -117,7 +117,7 @@ export class UniversityService {
         tuitionFee: row.tuition_domestic,
         websiteUrl: row.website,
         description: row.description,
-        logoUrl: null,
+        logoUrl: undefined,
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       }));

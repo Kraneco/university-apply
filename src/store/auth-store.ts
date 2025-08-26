@@ -79,6 +79,7 @@ export const useAuthStore = create<AuthStore>()(
           return result;
         } catch (error) {
           set({ isLoading: false });
+          console.error('登录失败:', error);
           return {
             success: false,
             message: 'api.networkError',
@@ -134,6 +135,7 @@ export const useAuthStore = create<AuthStore>()(
           return result;
         } catch (error) {
           set({ isLoading: false });
+          console.error('注册失败:', error);
           return {
             success: false,
             message: 'api.networkError',
@@ -258,6 +260,7 @@ export const useAuthStore = create<AuthStore>()(
             return false;
           }
         } catch (error) {
+          console.error('检查认证状态失败:', error);
           set({
             user: null,
             isAuthenticated: false,

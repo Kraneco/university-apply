@@ -1,7 +1,6 @@
-import { NextRequest } from 'next/server';
 import { initializeDatabase } from '@/lib/init-db';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('开始初始化数据库...');
     await initializeDatabase();

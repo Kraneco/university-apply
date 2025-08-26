@@ -1,7 +1,6 @@
-import { NextRequest } from 'next/server';
 import { sql } from '@/lib/db';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     console.log('开始重置数据库...');
 

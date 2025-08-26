@@ -104,52 +104,35 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden items-center space-x-6 xl:flex">
-            {/* 首页链接 - 所有人都能看到 */}
-            <Link
-              href={ROUTES.HOME}
-              className={`flex items-center space-x-1 rounded-md px-3 py-2 transition-all duration-200 ${
-                isActive(ROUTES.HOME)
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground hover:text-primary hover:bg-primary/20 hover:shadow-sm'
-              }`}
-            >
-              <Home className="h-4 w-4" />
-              <span>{t('navigation.home')}</span>
-            </Link>
-
             {/* 登录用户才能看到的导航项 */}
             {isAuthenticated && (
               <>
-                {allItems.slice(1).map(
-                  (
-                    item // Exclude the first item (Home) as it's now always visible
-                  ) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`flex items-center space-x-1 rounded-md px-3 py-2 transition-all duration-200 ${
-                        isActive(item.href)
-                          ? 'text-primary bg-primary/10'
-                          : 'text-muted-foreground hover:text-primary hover:bg-primary/20 hover:shadow-sm'
-                      }`}
-                    >
-                      <div className="relative">
-                        <item.icon className="h-4 w-4" />
-                        {/* 为通知项添加未读数量 badge */}
-                        {item.href === ROUTES.NOTIFICATIONS &&
-                          unreadCount > 0 && (
-                            <Badge
-                              variant="destructive"
-                              className="absolute -top-1 -right-16 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
-                            >
-                              {unreadCount > 99 ? '99+' : unreadCount}
-                            </Badge>
-                          )}
-                      </div>
-                      <span>{item.name}</span>
-                    </Link>
-                  )
-                )}
+                {allItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center space-x-1 rounded-md px-3 py-2 transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'text-primary bg-primary/10'
+                        : 'text-muted-foreground hover:text-primary hover:bg-primary/20 hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="relative">
+                      <item.icon className="h-4 w-4" />
+                      {/* 为通知项添加未读数量 badge */}
+                      {item.href === ROUTES.NOTIFICATIONS &&
+                        unreadCount > 0 && (
+                          <Badge
+                            variant="destructive"
+                            className="absolute -top-1 -right-16 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+                          >
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </Badge>
+                        )}
+                    </div>
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
               </>
             )}
           </div>
@@ -193,53 +176,34 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="border-t xl:hidden" ref={mobileMenuRef}>
           <div className="space-y-1 px-2 pt-2 pb-3">
-            {/* 首页链接 - 所有人都能看到 */}
-            <Link
-              href={ROUTES.HOME}
-              className={`flex items-center space-x-2 rounded-md px-3 py-2 transition-all duration-200 ${
-                isActive(ROUTES.HOME)
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-primary/20 hover:text-primary'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Home className="h-4 w-4" />
-              <span>{t('navigation.home')}</span>
-            </Link>
-
             {/* 登录用户才能看到的导航项 */}
             {isAuthenticated &&
-              allItems.slice(1).map(
-                (
-                  item // Exclude the first item (Home)
-                ) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center space-x-2 rounded-md px-3 py-2 transition-all duration-200 ${
-                      isActive(item.href)
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-primary/20 hover:text-primary'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <div className="relative">
-                      <item.icon className="h-4 w-4" />
-                      {/* 为通知项添加未读数量 badge */}
-                      {item.href === ROUTES.NOTIFICATIONS &&
-                        unreadCount > 0 && (
-                          <Badge
-                            variant="destructive"
-                            className="absolute -top-0.5 -right-18 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
-                          >
-                            {unreadCount > 99 ? '99+' : unreadCount}
-                          </Badge>
-                        )}
-                    </div>
-                    <span>{item.name}</span>
-                  </Link>
-                )
-              )}
+              allItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center space-x-2 rounded-md px-3 py-2 transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-primary/20 hover:text-primary'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <div className="relative">
+                    <item.icon className="h-4 w-4" />
+                    {/* 为通知项添加未读数量 badge */}
+                    {item.href === ROUTES.NOTIFICATIONS && unreadCount > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute -top-0.5 -right-18 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+                      >
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </Badge>
+                    )}
+                  </div>
+                  <span>{item.name}</span>
+                </Link>
+              ))}
             {!isAuthenticated && (
               <>
                 <Link

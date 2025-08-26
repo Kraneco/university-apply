@@ -16,7 +16,9 @@ export function Layout({ children, showFooter = false }: LayoutProps) {
 
   // 定义不需要显示导航栏的页面
   const noNavbarRoutes = [ROUTES.LOGIN, ROUTES.REGISTER];
-  const shouldShowNavbar = !noNavbarRoutes.includes(pathname as any);
+  const shouldShowNavbar = !noNavbarRoutes.includes(
+    pathname as (typeof noNavbarRoutes)[number]
+  );
 
   return (
     <div className="flex min-h-screen flex-col">

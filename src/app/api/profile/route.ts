@@ -6,7 +6,6 @@ import {
   createErrorResponse,
   createUnauthorizedResponse,
 } from '@/lib/api-response';
-import { getTranslation } from '@/lib/i18n';
 import { verifyToken } from '@/lib/auth';
 
 // GET /api/profile - 获取用户个人资料
@@ -82,15 +81,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const {
-      name,
-      phone,
-      address,
-      bio,
-      backupEmail,
-      emergencyContact,
-      website,
-    } = body;
+    const { name, phone, address } = body;
 
     // 验证必填字段
     if (!name || name.trim() === '') {

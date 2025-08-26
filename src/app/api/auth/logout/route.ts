@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiResponse } from '@/lib/api-response';
 import { getTranslation, type Language } from '@/lib/i18n';
 
 // 获取请求的语言
@@ -35,6 +34,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     const language = getRequestLanguage(request);
+    console.error('Logout error:', error);
     return NextResponse.json(
       {
         success: false,

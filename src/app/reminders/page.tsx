@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
 import { Layout } from '@/components/layout/layout';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
@@ -31,7 +30,6 @@ import { LoadingSpinner, Loading } from '@/components/ui/loading';
 import {
   Plus,
   Search,
-  Filter,
   Edit,
   Trash2,
   CheckCircle,
@@ -44,7 +42,6 @@ import {
 import { Reminder } from '@/types';
 
 function RemindersContent() {
-  const router = useRouter();
   const { t } = useTranslation();
   const { toast } = useToast();
 

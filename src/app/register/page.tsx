@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/card';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
-import { RegisterData } from '@/types';
 
 const registerSchema = z
   .object({
@@ -49,13 +48,10 @@ function RegisterContent() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
-
-  const password = watch('password');
 
   // 如果用户已登录，重定向到dashboard
   useEffect(() => {

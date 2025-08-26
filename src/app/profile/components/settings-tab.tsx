@@ -119,3 +119,4 @@ export function SettingsTab({ user }: SettingsTabProps) {
     </div>
   );
 }
+

@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 export function LanguageToggle() {
-  const { language, setLanguage, toggleLanguage } = useLanguageStore();
+  const { language, setLanguage } = useLanguageStore();
   const { t } = useTranslation();
 
   const languages: { value: 'zh' | 'en'; label: string; flag: string }[] = [

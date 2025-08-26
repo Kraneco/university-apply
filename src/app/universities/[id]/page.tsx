@@ -18,11 +18,8 @@ import {
   DollarSign,
   GraduationCap,
   Star,
-  ExternalLink,
   Calendar,
   BookOpen,
-  Users,
-  Award,
   Building,
   Clock,
   Target,
@@ -99,42 +96,36 @@ function UniversityDetailContent() {
   }, [universityId]);
 
   // 格式化排名
-  const formatRanking = (ranking: number | null) => {
+  const formatRanking = (ranking: number | undefined | null) => {
     if (!ranking) return 'N/A';
     return `#${ranking}`;
   };
 
   // 获取排名颜色
-  const getRankingColor = (ranking: number | null) => {
+  const getRankingColor = (ranking: number | undefined | null) => {
     if (!ranking) return 'secondary';
     if (ranking <= 10) return 'destructive';
-    if (ranking <= 50) return 'warning';
+    if (ranking <= 50) return 'outline';
     if (ranking <= 100) return 'default';
     return 'secondary';
   };
 
   // 格式化录取率
-  const formatAcceptanceRate = (rate: number | null) => {
+  const formatAcceptanceRate = (rate: number | undefined | null) => {
     if (!rate) return 'N/A';
     return `${rate}%`;
   };
 
   // 格式化学费
-  const formatTuitionFee = (fee: number | null) => {
+  const formatTuitionFee = (fee: number | undefined | null) => {
     if (!fee) return 'N/A';
     return `$${fee.toLocaleString()}`;
   };
 
   // 格式化GPA
-  const formatGPA = (gpa: number | null) => {
+  const formatGPA = (gpa: number | undefined | null) => {
     if (!gpa) return 'N/A';
     return gpa.toFixed(1);
-  };
-
-  // 格式化考试分数
-  const formatTestScore = (score: number | null) => {
-    if (!score) return 'N/A';
-    return score.toString();
   };
 
   if (loading) {
@@ -220,14 +211,14 @@ function UniversityDetailContent() {
                   {t('universities.visitWebsite')}
                 </Button>
               )}
-              <Button
+              {/* <Button
                 onClick={() =>
                   router.push(`/applications/new?universityId=${university.id}`)
                 }
               >
                 <Plus className="mr-2 h-4 w-4" />
                 {t('universities.applyNow')}
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

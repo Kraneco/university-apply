@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { UniversityService } from '@/lib/services/university-service';
 import { createApiResponse, createErrorResponse } from '@/lib/api-response';
-import { getTranslation, type Language } from '@/lib/i18n';
+import { type Language } from '@/lib/i18n';
 
 // 获取请求的语言
 function getRequestLanguage(request: NextRequest): Language {

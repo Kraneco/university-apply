@@ -8,7 +8,6 @@ import {
   getRequestLanguage,
   handleApiError,
 } from '@/lib/api-response';
-import { type Language } from '@/lib/i18n';
 
 // GET /api/reminders - 获取用户的提醒
 export async function GET(request: NextRequest) {

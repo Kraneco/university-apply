@@ -30,8 +30,8 @@ export class ApplicationService {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
         universityName: row.university_name,
-        programName: null, // 暂时设为null
-        degreeType: null, // 暂时设为null
+        programName: undefined, // 暂时设为undefined
+        degreeType: undefined, // 暂时设为undefined
       }));
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -71,8 +71,8 @@ export class ApplicationService {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
         universityName: row.university_name,
-        programName: null, // 暂时设为null
-        degreeType: null, // 暂时设为null
+        programName: undefined, // 暂时设为undefined
+        degreeType: undefined, // 暂时设为undefined
       };
     } catch (error) {
       console.error('Error fetching application:', error);

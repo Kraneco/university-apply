@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
 import { Layout } from '@/components/layout/layout';
@@ -17,7 +16,6 @@ import {
   Calendar,
   GraduationCap,
   MapPin,
-  DollarSign,
   FileText,
   CheckCircle,
   XCircle,
@@ -30,7 +28,6 @@ import { Application } from '@/types';
 function ApplicationDetailContent() {
   const { id } = useParams();
   const router = useRouter();
-  const { user } = useAuthStore();
   const { t } = useTranslation();
   const { toast } = useToast();
 
@@ -81,15 +78,15 @@ function ApplicationDetailContent() {
       case 'in_progress':
         return 'default';
       case 'submitted':
-        return 'info';
+        return 'outline';
       case 'under_review':
-        return 'warning';
+        return 'outline';
       case 'interview_scheduled':
-        return 'info';
+        return 'outline';
       case 'decision_made':
-        return 'success';
+        return 'default';
       case 'completed':
-        return 'success';
+        return 'default';
       default:
         return 'secondary';
     }
@@ -101,7 +98,7 @@ function ApplicationDetailContent() {
       case 'high':
         return 'destructive';
       case 'medium':
-        return 'warning';
+        return 'outline';
       case 'low':
         return 'secondary';
       default:

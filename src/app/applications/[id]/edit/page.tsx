@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
 import { Layout } from '@/components/layout/layout';
@@ -27,7 +26,6 @@ import { Application } from '@/types';
 function ApplicationEditContent() {
   const { id } = useParams();
   const router = useRouter();
-  const { user } = useAuthStore();
   const { t } = useTranslation();
   const { toast } = useToast();
 

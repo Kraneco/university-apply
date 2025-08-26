@@ -3,7 +3,6 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import { UserService } from '@/lib/user-service';
 import {
-  createApiResponse,
   createErrorResponse,
   createValidationErrorResponse,
 } from '@/lib/api-response';

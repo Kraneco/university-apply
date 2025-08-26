@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
 import { useTranslation } from '@/lib/i18n';
 import { useToast } from '@/hooks/use-toast';
 import { Layout } from '@/components/layout/layout';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
@@ -32,20 +31,15 @@ import { LoadingSpinner } from '@/components/ui/loading';
 import {
   Plus,
   Search,
-  Filter,
   Edit,
   Trash2,
   Eye,
   Calendar,
   GraduationCap,
-  MapPin,
-  DollarSign,
 } from 'lucide-react';
-import { ROUTES } from '@/lib/constants';
-import { Application, University, Program } from '@/types';
+import { Application, University } from '@/types';
 
 function ApplicationsContent() {
-  const { user } = useAuthStore();
   const router = useRouter();
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -239,15 +233,15 @@ function ApplicationsContent() {
       case 'in_progress':
         return 'default';
       case 'submitted':
-        return 'info';
+        return 'outline';
       case 'under_review':
-        return 'warning';
+        return 'outline';
       case 'interview_scheduled':
-        return 'info';
+        return 'outline';
       case 'decision_made':
-        return 'success';
+        return 'default';
       case 'completed':
-        return 'success';
+        return 'default';
       default:
         return 'secondary';
     }
@@ -259,7 +253,7 @@ function ApplicationsContent() {
       case 'high':
         return 'destructive';
       case 'medium':
-        return 'warning';
+        return 'outline';
       case 'low':
         return 'secondary';
       default:

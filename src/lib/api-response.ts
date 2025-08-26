@@ -184,6 +184,5 @@ export function apiException(
   messageKey = 'api.general.serverError',
   status = 500
 ): NextResponse<ApiResponse> {
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
   return createErrorResponse(messageKey, undefined, status);
 }

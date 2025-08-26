@@ -18,16 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { LoadingSpinner } from '@/components/ui/loading';
-import {
-  Search,
-  MapPin,
-  GraduationCap,
-  Star,
-  Globe,
-  DollarSign,
-  ExternalLink,
-  Eye,
-} from 'lucide-react';
+import { Search, MapPin, GraduationCap, ExternalLink, Eye } from 'lucide-react';
 import { University } from '@/types';
 
 function UniversitiesContent() {
@@ -56,8 +47,8 @@ function UniversitiesContent() {
         setUniversities(result.data);
 
         // 提取国家列表
-        const uniqueCountries = [
-          ...new Set(result.data.map((uni: University) => uni.country)),
+        const uniqueCountries: string[] = [
+          ...new Set<string>(result.data.map((uni: University) => uni.country)),
         ];
         setCountries(uniqueCountries.sort());
       } else {
@@ -92,7 +83,9 @@ function UniversitiesContent() {
       filtered = filtered.filter(
         (university) =>
           university.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          university.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (university.city?.toLowerCase() || '').includes(
+            searchTerm.toLowerCase()
+          ) ||
           university.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
           university.description
             ?.toLowerCase()
@@ -152,7 +145,7 @@ function UniversitiesContent() {
   }, [allUniversities, searchTerm, countryFilter, rankingFilter, sortBy]);
 
   // 格式化排名
-  const formatRanking = (ranking: number | null) => {
+  const formatRanking = (ranking: number | undefined | null) => {
     if (!ranking) return 'N/A';
     if (ranking <= 10) return `#${ranking}`;
     if (ranking <= 50) return `#${ranking}`;
@@ -161,22 +154,22 @@ function UniversitiesContent() {
   };
 
   // 获取排名颜色
-  const getRankingColor = (ranking: number | null) => {
+  const getRankingColor = (ranking: number | undefined | null) => {
     if (!ranking) return 'secondary';
     if (ranking <= 10) return 'destructive';
-    if (ranking <= 50) return 'warning';
+    if (ranking <= 50) return 'outline';
     if (ranking <= 100) return 'default';
     return 'secondary';
   };
 
   // 格式化录取率
-  const formatAcceptanceRate = (rate: number | null) => {
+  const formatAcceptanceRate = (rate: number | undefined | null) => {
     if (!rate) return 'N/A';
     return `${rate}%`;
   };
 
   // 格式化学费
-  const formatTuitionFee = (fee: number | null) => {
+  const formatTuitionFee = (fee: number | undefined | null) => {
     if (!fee) return 'N/A';
     return `$${fee.toLocaleString()}`;
   };

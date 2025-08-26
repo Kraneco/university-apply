@@ -3,7 +3,6 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 import { UserService } from '@/lib/user-service';
 import {
-  createApiResponse,
   createErrorResponse,
   createValidationErrorResponse,
 } from '@/lib/api-response';
@@ -95,6 +94,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     const language = getRequestLanguage(request);
+    console.error('Login error:', error);
     return createErrorResponse(
       'api.general.serverError',
       undefined,
