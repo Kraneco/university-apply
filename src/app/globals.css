@@ -292,3 +292,108 @@
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* 登录和注册页面 Dark mode 优化样式 */
+.dark .bg-gradient-to-br {
+  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.dark .from-background {
+  --tw-gradient-from: hsl(var(--background));
+  --tw-gradient-to: hsl(var(--background) / 0);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.dark .via-muted\/20 {
+  --tw-gradient-to: hsl(var(--background) / 0);
+  --tw-gradient-stops:
+    var(--tw-gradient-from), hsl(var(--muted) / 0.2), var(--tw-gradient-to);
+}
+
+.dark .to-background {
+  --tw-gradient-to: hsl(var(--background));
+}
+
+/* 卡片背景和边框优化 */
+.dark .bg-card\/80 {
+  background-color: hsl(var(--card) / 0.8);
+}
+
+.dark .border-border\/50 {
+  border-color: hsl(var(--border) / 0.5);
+}
+
+/* 错误信息样式优化 */
+.dark .bg-destructive\/10 {
+  background-color: hsl(var(--destructive) / 0.1);
+}
+
+.dark .border-destructive\/20 {
+  border-color: hsl(var(--destructive) / 0.2);
+}
+
+.dark .text-destructive\/80 {
+  color: hsl(var(--destructive) / 0.8);
+}
+
+/* 复选框样式优化 */
+.dark input[type='checkbox'] {
+  background-color: hsl(var(--background));
+  border-color: hsl(var(--border));
+}
+
+.dark input[type='checkbox']:checked {
+  background-color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+.dark input[type='checkbox']:focus {
+  --tw-ring-color: hsl(var(--primary));
+  --tw-ring-offset-color: hsl(var(--background));
+}
+
+/* 分割线样式优化 */
+.dark .border-border {
+  border-color: hsl(var(--border));
+}
+
+/* 背景模糊效果 */
+.dark .backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* 阴影效果优化 */
+.dark .shadow-xl {
+  box-shadow:
+    0 20px 25px -5px hsl(var(--foreground) / 0.1),
+    0 10px 10px -5px hsl(var(--foreground) / 0.04);
+}
+
+/* 返回按钮优化样式 */
+.dark .absolute.top-6.left-6 .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+.dark .absolute.top-6.left-6 .hover\:text-foreground:hover {
+  color: hsl(var(--foreground));
+}
+
+/* 返回按钮背景模糊效果 */
+.absolute.top-6.left-6 button {
+  backdrop-filter: blur(8px);
+  background-color: hsl(var(--background) / 0.8);
+  border: 1px solid hsl(var(--border) / 0.2);
+}
+
+.dark .absolute.top-6.left-6 button {
+  background-color: hsl(var(--background) / 0.9);
+  border-color: hsl(var(--border) / 0.3);
+}
+
+/* 返回按钮悬停效果 */
+.absolute.top-6.left-6 button:hover {
+  background-color: hsl(var(--accent));
+  border-color: hsl(var(--border));
+  transform: translateY(-1px);
+  transition: all 0.2s ease-in-out;
+}

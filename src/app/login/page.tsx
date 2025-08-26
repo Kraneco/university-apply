@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowLeft, Home } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 
 const loginSchema = z.object({
@@ -110,9 +110,22 @@ function LoginContent() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="from-background via-muted/20 to-background flex min-h-screen items-center justify-center bg-gradient-to-br px-4 py-12 sm:px-6 lg:px-8">
+        {/* 返回首页按钮 */}
+        <div className="absolute top-6 left-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/')}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">{t('common.backToHome')}</span>
+          </Button>
+        </div>
+
         <div className="w-full max-w-md space-y-8">
-          <Card>
+          <Card className="border-border/50 bg-card/80 shadow-xl backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-center">{t('login.title')}</CardTitle>
               <CardDescription className="text-center">
@@ -191,7 +204,7 @@ function LoginContent() {
                         setRememberMe(e.target.checked);
                         setValue('rememberMe', e.target.checked);
                       }}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
                     />
                     <label
                       htmlFor="remember-me"
@@ -202,15 +215,15 @@ function LoginContent() {
                   </div>
 
                   {/* <div className="text-sm">
-                    <a href="#" className="text-blue-600 hover:text-blue-500">
+                    <a href="#" className="text-primary hover:text-primary/80">
                       {t('login.forgotPassword')}
                     </a>
                   </div> */}
                 </div>
 
                 {error && (
-                  <div className="rounded-md bg-red-50 p-4">
-                    <p className="text-sm text-red-800">{error}</p>
+                  <div className="bg-destructive/10 border-destructive/20 rounded-md border p-4">
+                    <p className="text-destructive text-sm">{error}</p>
                   </div>
                 )}
 
@@ -222,10 +235,10 @@ function LoginContent() {
               <div className="mt-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
+                    <div className="border-border w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-background text-muted-foreground px-2">
+                    <span className="bg-card text-muted-foreground px-2">
                       {t('login.noAccount')}
                     </span>
                   </div>

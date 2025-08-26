@@ -16,6 +16,7 @@ export const zh = {
     view: '查看',
     close: '关闭',
     back: '返回',
+    backToHome: '返回首页',
     next: '下一步',
     previous: '上一步',
     submit: '提交',

@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react';
 import { ROUTES } from '@/lib/constants';
 
 const registerSchema = z
@@ -129,9 +129,22 @@ function RegisterContent() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="from-background via-muted/20 to-background flex min-h-screen items-center justify-center bg-gradient-to-br px-4 py-12 sm:px-6 lg:px-8">
+        {/* 返回首页按钮 */}
+        <div className="absolute top-6 left-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/')}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">{t('common.backToHome')}</span>
+          </Button>
+        </div>
+
         <div className="w-full max-w-md space-y-8">
-          <Card>
+          <Card className="border-border/50 bg-card/80 shadow-xl backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-center">
                 {t('register.title')}
@@ -287,11 +300,11 @@ function RegisterContent() {
                 </div>
 
                 {passwordErrors.length > 0 && (
-                  <div className="rounded-md bg-red-50 p-4">
-                    <h4 className="text-sm font-medium text-red-800">
+                  <div className="bg-destructive/10 border-destructive/20 rounded-md border p-4">
+                    <h4 className="text-destructive text-sm font-medium">
                       {t('register.passwordRequirements')}
                     </h4>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-red-700">
+                    <ul className="text-destructive/80 mt-2 list-disc space-y-1 pl-5 text-sm">
                       {passwordErrors.map((error, index) => (
                         <li key={index}>{error}</li>
                       ))}
@@ -300,8 +313,8 @@ function RegisterContent() {
                 )}
 
                 {error && (
-                  <div className="rounded-md bg-red-50 p-4">
-                    <p className="text-sm text-red-800">{error}</p>
+                  <div className="bg-destructive/10 border-destructive/20 rounded-md border p-4">
+                    <p className="text-destructive text-sm">{error}</p>
                   </div>
                 )}
 
@@ -315,10 +328,10 @@ function RegisterContent() {
               <div className="mt-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
+                    <div className="border-border w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-background text-muted-foreground px-2">
+                    <span className="bg-card text-muted-foreground px-2">
                       {t('register.hasAccount')}
                     </span>
                   </div>
